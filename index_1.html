@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanta Systems — Software für echte Probleme</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-deep:#060610;--bg-mid:#0c0c1a;--bg-surface:#111125;--bg-card:#141428;--bg-card2:#1a1a32;
+  --purple-700:#6d28d9;--purple-500:#8b5cf6;--purple-400:#a78bfa;--purple-300:#c4b5fd;
+  --purple-dim:rgba(139,92,246,0.08);--text-bright:#f5f3ff;--text-mid:#a09dc0;--text-dim:#5a5778;
+  --border-subtle:rgba(139,92,246,0.12);--border-mid:rgba(139,92,246,0.28);
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --shadow-card:0 4px 16px rgba(0,0,0,0.5),0 24px 64px rgba(0,0,0,0.35),0 0 0 1px rgba(139,92,246,0.12);
+  --shadow-glow:0 0 40px rgba(139,92,246,0.2),0 0 80px rgba(109,40,217,0.1);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg-deep);color:var(--text-bright);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;cursor:none}
+#cursor{width:12px;height:12px;background:var(--purple-400);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:exclusion}
+#cursor-ring{width:36px;height:36px;border:1px solid rgba(167,139,250,0.4);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%)}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:1000}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 3rem;background:rgba(6,6,16,0.75);backdrop-filter:blur(28px);border-bottom:1px solid var(--border-subtle);transition:padding .3s}
+nav.scrolled{padding:.85rem 3rem;background:rgba(6,6,16,0.95)}
+.nav-logo{font-family:var(--font-display);font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-bright);letter-spacing:-.02em}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--purple-700),var(--purple-400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;box-shadow:0 4px 12px rgba(109,40,217,0.5)}
+.nav-links{display:flex;gap:.25rem;list-style:none}
+.nav-links a{color:var(--text-mid);text-decoration:none;font-size:.85rem;font-weight:500;padding:.4rem .85rem;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--text-bright);background:var(--purple-dim)}
+.nav-cta{background:linear-gradient(135deg,var(--purple-700),var(--purple-500))!important;color:white!important;box-shadow:0 4px 16px rgba(109,40,217,0.4);transition:transform .2s,box-shadow .2s!important}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(109,40,217,0.5)!important}
+[data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+[data-reveal].visible{opacity:1;transform:translateY(0)}
+[data-reveal="left"]{transform:translateX(-36px)}
+[data-reveal="left"].visible{transform:translateX(0)}
+[data-reveal="right"]{transform:translateX(36px)}
+[data-reveal="right"].visible{transform:translateX(0)}
+[data-reveal="scale"]{transform:scale(.94) translateY(16px)}
+[data-reveal="scale"].visible{transform:scale(1) translateY(0)}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:9rem 3rem 5rem;position:relative;overflow:hidden;max-width:1100px;margin:0 auto}
+.hero-mesh{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 30%,rgba(109,40,217,0.22) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 15% 75%,rgba(99,70,200,0.12) 0%,transparent 55%);animation:meshMove 9s ease-in-out infinite alternate}
+@keyframes meshMove{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(12deg)}}
+.hero-gridlines{position:absolute;inset:0;background-image:linear-gradient(rgba(139,92,246,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.05) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 80% at 60% 40%,black 20%,transparent 70%)}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.orb-1{width:500px;height:500px;background:rgba(109,40,217,0.14);top:-150px;right:-80px;animation:orbF 7s ease-in-out infinite alternate}
+.orb-2{width:280px;height:280px;background:rgba(139,92,246,0.09);bottom:0;left:-60px;animation:orbF 6s ease-in-out infinite alternate 2s}
+@keyframes orbF{from{transform:translateY(0) scale(1)}to{transform:translateY(-25px) scale(1.06)}}
+.hero-text{position:relative;z-index:2;max-width:720px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(139,92,246,0.1);border:1px solid var(--border-mid);color:var(--purple-300);font-size:.72rem;font-weight:600;padding:.3rem .9rem;border-radius:100px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2rem}
+.eyebrow-dot{width:6px;height:6px;background:var(--purple-400);border-radius:50%;animation:blinkDot 2s ease-in-out infinite;box-shadow:0 0 8px var(--purple-400)}
+@keyframes blinkDot{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:var(--font-display);font-size:clamp(3.5rem,7vw,6.5rem);font-weight:800;line-height:1.0;letter-spacing:-.04em;margin-bottom:1.75rem}
+.h1-line{display:block;overflow:hidden}
+.h1-line span{display:block;animation:slideUp .9s var(--ease-out) both}
+.h1-line:nth-child(1) span{animation-delay:.1s}
+.h1-line:nth-child(2) span{animation-delay:.22s}
+.h1-line:nth-child(3) span{animation-delay:.34s}
+@keyframes slideUp{from{transform:translateY(110%)}to{transform:translateY(0)}}
+.grad{background:linear-gradient(135deg,#e9d5ff 0%,var(--purple-400) 45%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:1.1rem;color:var(--text-mid);max-width:520px;line-height:1.8;margin-bottom:2.5rem;font-weight:300;animation:fadeIn 1s var(--ease-out) .5s both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeIn 1s var(--ease-out) .65s both}
+.hero-cards-row{position:relative;z-index:2;display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:4rem;animation:fadeIn 1s var(--ease-out) .8s both}
+.h-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:16px;padding:1.5rem;box-shadow:var(--shadow-card);backdrop-filter:blur(12px);transition:transform .4s var(--ease-out),box-shadow .4s,border-color .3s;flex-shrink:0}
+.h-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-card),var(--shadow-glow);border-color:var(--border-mid)}
+.h-card-main{width:280px}.h-card-stat{width:160px}.h-card-status{width:240px}
+.hc-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:600;margin-bottom:.65rem}
+.hc-title{font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.hc-desc{font-size:.78rem;color:var(--text-mid);line-height:1.5;font-weight:300}
+.hc-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:.75rem}
+.hc-chip{background:var(--purple-dim);border:1px solid var(--border-subtle);color:var(--purple-300);font-size:.65rem;padding:.2rem .6rem;border-radius:100px;font-weight:600}
+.hc-num{font-family:var(--font-display);font-size:2.2rem;font-weight:800;color:var(--purple-400);line-height:1}
+.hc-sub{font-size:.72rem;color:var(--text-dim);margin-top:.25rem}
+.hc-dots{display:flex;gap:5px;margin-top:.75rem}
+.hc-dot{width:8px;height:8px;border-radius:50%;background:var(--purple-dim);border:1px solid var(--border-subtle)}
+.hc-dot.on{background:var(--purple-500);border-color:var(--purple-400);box-shadow:0 0 8px var(--purple-500)}
+.status-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:#34d399;font-size:.7rem;font-weight:600;padding:.25rem .75rem;border-radius:100px;margin-bottom:.6rem}
+.status-dot{width:5px;height:5px;border-radius:50%;background:#34d399;animation:blinkDot 2s ease-in-out infinite;box-shadow:0 0 6px #34d399}
+.btn-mag{position:relative;display:inline-flex;align-items:center;gap:8px;padding:.85rem 2rem;border-radius:12px;font-weight:600;font-size:.9rem;text-decoration:none;cursor:none;overflow:hidden}
+.btn-primary-fill{background:linear-gradient(135deg,var(--purple-700),var(--purple-500));color:white;box-shadow:0 4px 20px rgba(109,40,217,0.5);transition:transform .2s var(--ease-out),box-shadow .2s}
+.btn-primary-fill:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(109,40,217,0.6)}
+.btn-ghost{color:var(--text-mid);border:1px solid var(--border-mid);transition:color .2s,border-color .2s,background .2s}
+.btn-ghost:hover{color:var(--text-bright);border-color:var(--purple-400);background:var(--purple-dim)}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-mid),transparent)}
+.stat-bar{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg-mid);border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)}
+.stat-item{padding:2.5rem 3rem;border-right:1px solid var(--border-subtle);position:relative;overflow:hidden;transition:background .3s}
+.stat-item:last-child{border-right:none}
+.stat-item:hover{background:var(--purple-dim)}
+.stat-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple-700),var(--purple-400));transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease-out)}
+.stat-item:hover::before{transform:scaleX(1)}
+.stat-num{font-family:var(--font-display);font-size:3rem;font-weight:800;color:var(--text-bright);letter-spacing:-.05em;line-height:1;margin-bottom:.3rem}
+.stat-num sup{font-size:1.2rem;color:var(--purple-400);vertical-align:super}
+.stat-label{font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.section{padding:7rem 3rem;max-width:1100px;margin:0 auto}
+.section-chip{display:inline-flex;align-items:center;gap:8px;background:var(--purple-dim);border:1px solid var(--border-mid);color:var(--purple-400);font-size:.7rem;font-weight:700;padding:.25rem .85rem;border-radius:100px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.25rem}
+.section-h2{font-family:var(--font-display);font-size:clamp(2.2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:1rem}
+.section-p{font-size:1rem;color:var(--text-mid);max-width:480px;line-height:1.8;font-weight:300}
+.vision-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:center}
+.vision-stack{display:flex;flex-direction:column;gap:1rem}
+.v-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:14px;padding:1.5rem 1.75rem;display:flex;gap:1.1rem;align-items:flex-start;box-shadow:var(--shadow-card);cursor:none;transition:border-color .3s,transform .4s var(--ease-out),box-shadow .4s}
+.v-card:hover{border-color:var(--border-mid);transform:translateY(-3px);box-shadow:var(--shadow-card),0 0 30px rgba(139,92,246,0.1)}
+.v-icon{width:40px;height:40px;flex-shrink:0;background:var(--purple-dim);border:1px solid var(--border-mid);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-top:2px}
+.v-title{font-family:var(--font-display);font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+.v-desc{font-size:.82rem;color:var(--text-mid);line-height:1.6;font-weight:300}
+.product-wrap{background:var(--bg-card);border:1px solid var(--border-mid);border-radius:24px;overflow:hidden;box-shadow:var(--shadow-card);display:grid;grid-template-columns:1fr 260px}
+.product-body{padding:3rem;border-right:1px solid var(--border-subtle)}
+.product-tag{display:inline-flex;align-items:center;gap:6px;background:var(--purple-dim);border:1px solid var(--border-mid);color:var(--purple-300);font-size:.7rem;font-weight:700;padding:.25rem .85rem;border-radius:100px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.25rem}
+.product-tag-dot{width:5px;height:5px;background:var(--purple-400);border-radius:50%;animation:blinkDot 2s infinite}
+.product-h3{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.85rem}
+.product-desc{font-size:.92rem;color:var(--text-mid);line-height:1.75;max-width:480px;margin-bottom:1.75rem;font-weight:300}
+.product-chips{display:flex;flex-wrap:wrap;gap:6px}
+.p-chip{background:rgba(255,255,255,0.04);border:1px solid var(--border-subtle);border-radius:100px;padding:.3rem 1rem;font-size:.78rem;color:var(--text-mid);font-weight:500;transition:border-color .2s,color .2s}
+.p-chip:hover{border-color:var(--purple-400);color:var(--purple-300)}
+.product-sidebar{padding:2rem 1.75rem;display:flex;flex-direction:column;gap:1.25rem;background:var(--bg-surface)}
+.p-metric{background:var(--bg-card2);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;text-align:center;transition:border-color .2s,transform .3s var(--ease-out)}
+.p-metric:hover{border-color:var(--border-mid);transform:scale(1.02)}
+.p-num{font-family:var(--font-display);font-size:2.2rem;font-weight:800;color:var(--purple-400);line-height:1}
+.p-label{font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem;font-weight:600}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.t-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:18px;padding:2.25rem 1.75rem;text-align:center;box-shadow:var(--shadow-card);cursor:none;transition:border-color .3s,transform .4s var(--ease-out),box-shadow .4s;position:relative;overflow:hidden}
+.t-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple-500),transparent);opacity:0;transition:opacity .3s}
+.t-card:hover{border-color:var(--border-mid);box-shadow:var(--shadow-card),var(--shadow-glow)}
+.t-card:hover::before{opacity:1}
+.t-avatar{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--purple-700),var(--purple-400));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:white;margin:0 auto 1.25rem;box-shadow:0 4px 20px rgba(109,40,217,0.4),0 0 0 3px rgba(139,92,246,0.15);transition:box-shadow .3s}
+.t-card:hover .t-avatar{box-shadow:0 8px 30px rgba(109,40,217,0.5),0 0 0 4px rgba(139,92,246,0.25)}
+.t-name{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
+.t-role{font-size:.7rem;color:var(--purple-400);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem}
+.t-desc{font-size:.83rem;color:var(--text-mid);line-height:1.65;font-weight:300}
+.eco-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;max-width:720px}
+.e-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:16px;padding:1.75rem;box-shadow:var(--shadow-card);transition:border-color .3s,transform .3s var(--ease-out);cursor:none;text-decoration:none;display:block;color:inherit}
+.e-card:hover{transform:translateY(-3px);border-color:var(--border-mid)}
+.e-card.here{border-color:var(--purple-500);background:rgba(139,92,246,0.06)}
+.e-chip{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:.6rem;display:block}
+.e-chip.ks{color:var(--purple-400)}.e-chip.k3d{color:#34d399}
+.e-title{font-family:var(--font-display);font-size:1.05rem;font-weight:700;margin-bottom:.5rem;color:var(--text-bright)}
+.e-desc{font-size:.82rem;color:var(--text-mid);line-height:1.6;font-weight:300}
+.e-badge{display:inline-block;margin-top:1rem;font-size:.68rem;font-weight:700;padding:.2rem .75rem;border-radius:100px}
+.e-badge.active{background:rgba(139,92,246,0.15);color:var(--purple-300);border:1px solid var(--border-mid)}
+.e-badge.link{background:rgba(52,211,153,0.1);color:#34d399;border:1px solid rgba(52,211,153,0.25)}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.c-info-list{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.5rem}
+.c-row{display:flex;align-items:center;gap:14px}
+.c-icon{width:38px;height:38px;background:var(--purple-dim);border:1px solid var(--border-mid);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.c-val{font-size:.875rem;color:var(--text-mid);font-weight:300}
+.form-group{margin-bottom:1rem}
+.form-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700;display:block;margin-bottom:6px}
+.form-control{width:100%;padding:13px 16px;background:var(--bg-card);border:1px solid var(--border-mid);border-radius:10px;color:var(--text-bright);font-size:.875rem;font-family:var(--font-body);font-weight:300;outline:none;transition:border-color .25s,box-shadow .25s;-webkit-appearance:none;appearance:none}
+.form-control:focus{border-color:var(--purple-500);box-shadow:0 0 0 3px rgba(139,92,246,0.15)}
+textarea.form-control{min-height:130px;resize:vertical}
+select.form-control option{background:var(--bg-mid)}
+.btn-submit{width:100%;padding:15px;background:linear-gradient(135deg,var(--purple-700),var(--purple-500));color:white;border:none;border-radius:12px;font-weight:700;font-size:.9rem;letter-spacing:.02em;cursor:none;font-family:var(--font-body);box-shadow:0 4px 24px rgba(109,40,217,0.4);transition:transform .3s var(--ease-out),box-shadow .3s}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(109,40,217,0.55)}
+.btn-submit:disabled{opacity:.5;transform:none}
+.msg-ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#34d399;border-radius:10px;padding:12px 16px;font-size:.85rem;margin-bottom:1rem}
+.msg-err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:10px;padding:12px 16px;font-size:.85rem;margin-bottom:1rem}
+footer{padding:2.5rem 3rem;border-top:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:var(--bg-mid)}
+.footer-logo{font-family:var(--font-display);font-size:.95rem;font-weight:800;display:flex;align-items:center;gap:8px;color:var(--text-bright)}
+.footer-mail{color:var(--purple-400);text-decoration:none;font-size:.8rem;transition:color .2s}
+.footer-mail:hover{color:var(--purple-300)}
+.footer-copy{font-size:.75rem;color:var(--text-dim)}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo"><div class="logo-icon">KS</div>Kanta Systems</a>
+  <ul class="nav-links">
+    <li><a href="#vision">Vision</a></li>
+    <li><a href="#produkt">Produkt</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#oekosystem">Ökosystem</a></li>
+    <li><a href="#kontakt" class="nav-cta">Kontakt</a></li>
+  </ul>
+</nav>
+
+<div style="position:relative;overflow:hidden;background:var(--bg-deep)">
+  <div style="position:absolute;inset:0">
+    <div class="hero-mesh" style="position:absolute;inset:0"></div>
+    <div class="hero-gridlines" style="position:absolute;inset:0"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+  <header class="hero">
+    <div class="hero-text">
+      <div class="hero-eyebrow"><div class="eyebrow-dot"></div>Software · Merseburg · 2026</div>
+      <h1>
+        <span class="h1-line"><span>Wir bauen</span></span>
+        <span class="h1-line"><span class="grad">smarte Software</span></span>
+        <span class="h1-line"><span>die bewegt.</span></span>
+      </h1>
+      <p class="hero-desc">Kanta Systems entwickelt digitale Produkte für echte Probleme — beginnend mit der vollständigen Digitalisierung des deutschen Schulalltags.</p>
+      <div class="hero-actions">
+        <a href="#vision" class="btn-mag btn-primary-fill">Unsere Vision</a>
+        <a href="#kontakt" class="btn-mag btn-ghost">Kontakt aufnehmen →</a>
+      </div>
+    </div>
+    <div class="hero-cards-row">
+      <div class="h-card h-card-main" data-tilt>
+        <div class="hc-label">Erstes Produkt</div>
+        <div class="hc-title">Kanta School</div>
+        <div class="hc-desc">Schulmanagement neu gedacht — eine Plattform für alle Rollen.</div>
+        <div class="hc-chips"><span class="hc-chip">Stundenplan</span><span class="hc-chip">KI-Tutor</span><span class="hc-chip">Notenbuch</span></div>
+      </div>
+      <div class="h-card h-card-stat" data-tilt>
+        <div class="hc-label">Lizenzpreis</div>
+        <div class="hc-num">5k€</div>
+        <div class="hc-sub">3-Jahres-Lizenz</div>
+        <div class="hc-dots"><div class="hc-dot on"></div><div class="hc-dot on"></div><div class="hc-dot on"></div><div class="hc-dot"></div></div>
+      </div>
+      <div class="h-card h-card-status" data-tilt>
+        <div class="status-pill"><div class="status-dot"></div>In Entwicklung</div>
+        <div class="hc-label">Kanta School — Phase 1 Konzept abgeschlossen</div>
+        <div class="hc-num" style="font-size:1.6rem;margin-top:.5rem">3</div>
+        <div class="hc-sub">Gründer · Merseburg</div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="stat-bar">
+  <div class="stat-item" data-reveal><div class="stat-num"><span class="counter" data-target="3">0</span><sup>+</sup></div><div class="stat-label">Gründer</div></div>
+  <div class="stat-item" data-reveal style="transition-delay:.1s"><div class="stat-num"><span class="counter" data-target="1">0</span><sup>st</sup></div><div class="stat-label">Produkt in Entwicklung</div></div>
+  <div class="stat-item" data-reveal style="transition-delay:.2s"><div class="stat-num">∞</div><div class="stat-label">Möglichkeiten</div></div>
+</div>
+<div class="divider"></div>
+
+<section class="section" id="vision">
+  <div class="vision-wrap">
+    <div data-reveal="left">
+      <div class="section-chip">Wer wir sind</div>
+      <h2 class="section-h2">Software,<br>die wirklich<br>bewegt.</h2>
+      <p class="section-p" style="margin-top:1.25rem">Kanta Systems ist ein junges Softwareunternehmen aus Merseburg. Unsere Mission: komplexe Systeme radikal vereinfachen — für echte Nutzer, nicht für Entwickler.</p>
+      <p class="section-p" style="margin-top:1rem">Als Teil des Kantan3D-Ökosystems verbinden wir Produktentwicklung, Marketing und Technik zu einem Team, das liefert.</p>
+    </div>
+    <div class="vision-stack" data-reveal="right">
+      <div class="v-card" data-tilt><div class="v-icon">🎯</div><div><div class="v-title">Problem zuerst</div><div class="v-desc">Wir starten nie mit Technologie — wir starten mit dem echten Problem, das gelöst werden muss.</div></div></div>
+      <div class="v-card" data-tilt><div class="v-icon">⚡</div><div><div class="v-title">Schnell iterieren</div><div class="v-desc">Konzept, Feedback, anpassen — wir liefern lieber früh und oft als spät und perfekt.</div></div></div>
+      <div class="v-card" data-tilt><div class="v-icon">🔗</div><div><div class="v-title">Verbunden denken</div><div class="v-desc">Jedes Kanta-Produkt ist Teil eines Ökosystems. Hardware, Software und Marke greifen ineinander.</div></div></div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="produkt">
+  <div data-reveal style="margin-bottom:3rem">
+    <div class="section-chip">Erstes Produkt</div>
+    <h2 class="section-h2">Die Schulplattform.</h2>
+    <p class="section-p">Unser erstes Produkt digitalisiert den deutschen Schulalltag — von der Schulleitung bis zum Schüler, alles unter einem Dach.</p>
+  </div>
+  <div class="product-wrap" data-reveal="scale">
+    <div class="product-body">
+      <div class="product-tag"><div class="product-tag-dot"></div>In Entwicklung</div>
+      <h3 class="product-h3">Kanta School</h3>
+      <p class="product-desc">Eine vollintegrierte Schul- und Organisations-App. Stundenpläne, Noten, Vertretungen und KI-gestützte Lernassistenten — eine Plattform, keine fünf verschiedenen Apps.</p>
+      <div class="product-chips">
+        <div class="p-chip">Stundenplan</div><div class="p-chip">Notenbuch</div><div class="p-chip">Vertretungsplan</div>
+        <div class="p-chip">KI-Tutor</div><div class="p-chip">Rollenbasiert</div><div class="p-chip">Elternzugang</div>
+      </div>
+    </div>
+    <div class="product-sidebar">
+      <div class="p-metric"><div class="p-num">5k€</div><div class="p-label">3-Jahres-Lizenz</div></div>
+      <div class="p-metric"><div class="p-num">4</div><div class="p-label">Nutzerrollen</div></div>
+      <div class="p-metric"><div class="p-num">1</div><div class="p-label">Plattform</div></div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="team">
+  <div data-reveal style="margin-bottom:3rem">
+    <div class="section-chip">Das Team</div>
+    <h2 class="section-h2">Jung.<br>Ambitioniert.<br>Fokussiert.</h2>
+    <p class="section-p">Gegründet von drei Schülern aus Merseburg, die aufgehört haben zu warten, bis sie alt genug sind.</p>
+  </div>
+  <div class="team-grid">
+    <div class="t-card" data-reveal data-tilt style="transition-delay:.05s"><div class="t-avatar">NG</div><div class="t-name">Niklas Göthe</div><div class="t-role">CTO · Engineering</div><div class="t-desc">Technik, Konstruktion und digitale Infrastruktur. Verantwortlich für alles, was unter der Haube passiert.</div></div>
+    <div class="t-card" data-reveal data-tilt style="transition-delay:.15s"><div class="t-avatar">PS</div><div class="t-name">Pascal Schmidt</div><div class="t-role">COO · Produkt & Vertrieb</div><div class="t-desc">Produktstrategie, Kundenkontakte und der Antrieb hinter Kanta Systems als eigenem Standbein.</div></div>
+    <div class="t-card" data-reveal data-tilt style="transition-delay:.25s"><div class="t-avatar">TP</div><div class="t-name">Til Peschke</div><div class="t-role">CMO · Marke & Marketing</div><div class="t-desc">Markenidentität, Social Media und der Außenauftritt — von TikTok bis zum Messegespräch.</div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="oekosystem">
+  <div data-reveal style="margin-bottom:3rem">
+    <div class="section-chip">Das Kantan-Ökosystem</div>
+    <h2 class="section-h2">Mehr als Software.</h2>
+    <p class="section-p">Kanta Systems ist Teil des Kantan3D-Ökosystems — ein Team, eine Vision, zwei Marken.</p>
+  </div>
+  <div class="eco-wrap" data-reveal>
+    <div class="e-card here">
+      <span class="e-chip ks">Kanta Systems</span>
+      <div class="e-title">Software & Plattformen</div>
+      <div class="e-desc">Digitale Produkte für Schulen, Organisationen und darüber hinaus. Erstes Produkt: Kanta School.</div>
+      <div class="e-badge active">Du bist hier</div>
+    </div>
+    <a class="e-card" href="https://kantan3.github.io/Kantan3D_Info/" target="_blank" rel="noopener">
+      <span class="e-chip k3d">Kantan3D</span>
+      <div class="e-title">3D-Druck & Hardware</div>
+      <div class="e-desc">Lokale Produktion von RC-Fahrzeugen, B2B-Gadgets und individuellem 3D-Druck aus Merseburg.</div>
+      <div class="e-badge link">→ Website besuchen</div>
+    </a>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="kontakt">
+  <div data-reveal style="margin-bottom:3.5rem">
+    <div class="section-chip">Kontakt</div>
+    <h2 class="section-h2">Schreibt uns.</h2>
+  </div>
+  <div class="contact-wrap">
+    <div data-reveal="left">
+      <p style="color:var(--text-mid);font-size:.97rem;line-height:1.8;margin-bottom:2rem;font-weight:300">Ob Schule, Partnerschaft oder eine einfache Frage — wir freuen uns über jede Nachricht und melden uns innerhalb von 48 Stunden.</p>
+      <div class="c-info-list">
+        <div class="c-row"><div class="c-icon">✉</div><span class="c-val">kantan3d.business@gmail.com</span></div>
+        <div class="c-row"><div class="c-icon">📍</div><span class="c-val">Merseburg, Deutschland</span></div>
+        <div class="c-row"><div class="c-icon">⏱</div><span class="c-val">Antwort innerhalb von 48h</span></div>
+        <div class="c-row"><div class="c-icon">🔗</div><span class="c-val" style="color:var(--purple-400)">Teil des Kantan3D-Ökosystems</span></div>
+      </div>
+    </div>
+    <div data-reveal="right">
+      <div id="msg-ok" class="msg-ok" style="display:none">✓ Nachricht gesendet! Wir melden uns innerhalb von 48 Stunden.</div>
+      <div id="msg-err" class="msg-err" style="display:none">Fehler — bitte direkt an: kantan3d.business@gmail.com</div>
+      <div id="msg-val" class="msg-err" style="display:none">Bitte alle Pflichtfelder ausfüllen.</div>
+      <div class="form-group"><label class="form-label">Name *</label><input class="form-control" type="text" id="f-name" placeholder="Max Mustermann"/></div>
+      <div class="form-group"><label class="form-label">E-Mail *</label><input class="form-control" type="email" id="f-email" placeholder="max@beispiel.de"/></div>
+      <div class="form-group">
+        <label class="form-label">Interesse</label>
+        <select class="form-control" id="f-interest">
+          <option>Allgemeine Anfrage</option><option>Schul-Lizenz anfragen</option>
+          <option>Partnerschaft / B2B</option><option>Demo anfragen</option>
+          <option>Investoren-Anfrage</option><option>Sonstiges</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Nachricht *</label><textarea class="form-control" id="f-msg" placeholder="Beschreibt euer Vorhaben oder eure Frage..."></textarea></div>
+      <button class="btn-submit" id="submit-btn" onclick="sendForm()">Nachricht senden →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo"><div class="logo-icon" style="width:26px;height:26px;font-size:11px">KS</div>Kanta Systems</div>
+  <a href="mailto:kantan3d.business@gmail.com" class="footer-mail">kantan3d.business@gmail.com</a>
+  <div class="footer-copy">© 2026 Kanta Systems · Part of the Kantan3D Ecosystem · Merseburg</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60));
+const obs=new IntersectionObserver((entries)=>entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*60);}),{threshold:0.08});
+document.querySelectorAll('[data-reveal]').forEach(el=>obs.observe(el));
+const cObs=new IntersectionObserver((entries)=>entries.forEach(e=>{if(e.isIntersecting){const el=e.target,target=+el.dataset.target;let cur=0;const t=setInterval(()=>{cur=Math.min(cur+target/30,target);el.textContent=Math.round(cur);if(cur>=target)clearInterval(t);},40);cObs.unobserve(el);}}),{threshold:.5});
+document.querySelectorAll('.counter').forEach(el=>cObs.observe(el));
+document.querySelectorAll('[data-tilt]').forEach(card=>{
+  card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(600px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-3px)`;});
+  card.addEventListener('mouseleave',()=>{card.style.transform='';});
+});
+emailjs.init({publicKey:"U-WEdLQEh2rSHUBdV"});
+function showMsg(id){['msg-ok','msg-err','msg-val'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display='block';}
+async function sendForm(){
+  const name=document.getElementById('f-name').value.trim(),email=document.getElementById('f-email').value.trim(),interest=document.getElementById('f-interest').value,message=document.getElementById('f-msg').value.trim(),btn=document.getElementById('submit-btn');
+  if(!name||!email||!message){showMsg('msg-val');return;}
+  btn.disabled=true;btn.textContent='Wird gesendet…';
+  try{const res=await emailjs.send('service_1wyqv6e','template_3vxsesq',{from_name:name,from_email:email,interest,message});if(res.status===200){showMsg('msg-ok');document.getElementById('f-name').value='';document.getElementById('f-email').value='';document.getElementById('f-msg').value='';}else showMsg('msg-err');}catch(e){showMsg('msg-err');}
+  btn.disabled=false;btn.textContent='Nachricht senden →';
+}
+</script>
+</body>
+</html>
